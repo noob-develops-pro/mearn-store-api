@@ -1,0 +1,2 @@
+- a store api .. for now one can CRUD , i'll be implimenting advance features.
+- basically I am extensivly working with mongo db
