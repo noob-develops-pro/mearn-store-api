@@ -7,14 +7,23 @@ const productSchema = new mongoose.Schema({
   },
   price: {
     type: Number,
-    required: true,
+    required: [true, 'Number is required'],
   },
-  description: {
-    type: String,
+  featured: {
+    type: Boolean,
+    default: false,
   },
-  category: {
+  rating: {
+    type: Number,
+    default: 4.5,
+  },
+  company: {
     type: String,
-    required: true,
+    enum: {
+      values: ['ikea', 'liddy', 'caressa', 'marcos'],
+      message: '{VALUE} is not supported',
+    },
+    // enum: ['ikea', 'liddy', 'caressa', 'marcos'],
   },
   createdAt: {
     type: Date,
