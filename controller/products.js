@@ -1,9 +1,22 @@
 // Get all products
 import Product from '../models/productSchema.js'
+
 export const getAllProducts = async (req, res) => {
+  const { sort, fields, limit } = req.query
+  let sortList, fieldsList
+
   try {
+    if (sort) {
+      sortList = sort.split(',').join(' ')
+    }
+    if (fields) {
+      fieldsList = fields.split(',').join(' ')
+    }
     const products = await Product.find()
-    res.json(products)
+      .select(fieldsList)
+      .sort(sort)
+      .limit(limit ? limit : 10)
+    res.json({ products, nHits: products.length })
   } catch (error) {
     res.status(500).json({ error: 'Internal Server Error' })
   }

@@ -1,5 +1,4 @@
 import express from 'express'
-import expressError from 'express-async-errors'
 
 import { connectDB } from './db/connect.js'
 import dotenv from 'dotenv'
