@@ -2,21 +2,57 @@
 import Product from '../models/productSchema.js'
 
 export const getAllProducts = async (req, res) => {
-  const { sort, fields, limit } = req.query
-  let sortList, fieldsList
-
   try {
-    if (sort) {
-      sortList = sort.split(',').join(' ')
+    const {
+      featured,
+      company,
+      name,
+      sort = 'createdAt',
+      fields,
+      numericFilters,
+      limit = 10,
+      page = 1,
+    } = req.query
+
+    const queryObject = {}
+
+    if (featured) {
+      queryObject.featured = featured === 'true'
     }
-    if (fields) {
-      fieldsList = fields.split(',').join(' ')
+    if (company) {
+      queryObject.company = company
     }
-    const products = await Product.find()
-      .select(fieldsList)
-      .sort(sort)
-      .limit(limit ? limit : 10)
-    res.json({ products, nHits: products.length })
+    if (name) {
+      queryObject.name = { $regex: name, $options: 'i' }
+    }
+    if (numericFilters) {
+      const operatorMap = {
+        '>': '$gt',
+        '>=': '$gte',
+        '=': '$eq',
+        '<': '$lt',
+        '<=': '$lte',
+      }
+      numericFilters.split(',').forEach((filter) => {
+        const [field, operator, value] = filter.split(/(>|>=|=|<|<=)/)
+
+        if (operatorMap.hasOwnProperty(operator)) {
+          queryObject[field] = { [operatorMap[operator]]: Number(value) }
+        }
+      })
+    }
+
+    const sortList = sort.split(',').join(' ')
+    const fieldList = fields ? fields.split(',').join(' ') : ''
+    const skip = (page - 1) * limit
+
+    let products = await Product.find(queryObject)
+      .sort(sortList)
+      .select(fieldList)
+      .skip(skip)
+      .limit(Number(limit))
+
+    res.json({ products, nbHits: products.length })
   } catch (error) {
     res.status(500).json({ error: 'Internal Server Error' })
   }
