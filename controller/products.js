@@ -13,7 +13,7 @@ export const getAllProducts = async (req, res) => {
       limit = 10,
       page = 1,
     } = req.query
-
+    console.log(company)
     const queryObject = {}
 
     if (featured) {
@@ -25,6 +25,7 @@ export const getAllProducts = async (req, res) => {
     if (name) {
       queryObject.name = { $regex: name, $options: 'i' }
     }
+
     if (numericFilters) {
       const operatorMap = {
         '>': '$gt',
@@ -33,10 +34,12 @@ export const getAllProducts = async (req, res) => {
         '<': '$lt',
         '<=': '$lte',
       }
-      numericFilters.split(',').forEach((filter) => {
-        const [field, operator, value] = filter.split(/(>|>=|=|<|<=)/)
 
-        if (operatorMap.hasOwnProperty(operator)) {
+      const options = ['price', 'rating']
+      numericFilters.split(',').forEach((item) => {
+        const [field, operator, value] = item.split(/(>|>=|=|<|<=)/) //spliting based on these operators
+
+        if (options.includes(field)) {
           queryObject[field] = { [operatorMap[operator]]: Number(value) }
         }
       })
