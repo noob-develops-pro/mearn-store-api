@@ -1,6 +1,6 @@
 ## STORE API written in NODE (express js)
 
-- a store api .. for now one can CRUD , i'll be implimenting advance features.
+- a store api ..one can do CRUD , filtering and sorting.
 - basically I have extensivly worked with mongo db (mongoose)
 
 #### All CRUD Operations can be done.
